@@ -94,7 +94,7 @@ def main():
         
                 print("Updating record...")
                 current_wallpaper_file.seek(0)
-                current_wallpaper_file.write("https://pbs.twimg.com/media/E9ajfO0VIAAMQXl.jpg")
+                current_wallpaper_file.write(newest_tweeted_wallpaper)
                 current_wallpaper_file.truncate()
 
         print(f"Sleeping... (for {wait_time}s)")
