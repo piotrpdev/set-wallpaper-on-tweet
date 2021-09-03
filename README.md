@@ -27,3 +27,4 @@ wscript.exe "[Location of this repo]\invisible.vbs" "[Location of this repo]\sta
 * Set the location of the repo in `startup_script_example.bat` and rename it to `startup_script.bat`
 
 > To shutdown script, use `taskkill /IM pythonw.exe /F`
+> To find out if script is running, use `tasklist /FI "IMAGENAME eq pythonw.exe"`

@@ -1,5 +1,6 @@
 import requests
 import os
+import sys
 import json
 import time
 
@@ -7,9 +8,14 @@ import ctypes
 
 from secrets import bearer_token
 
+### Parameters ###
+
 testing = False
 user_id = 3466569498 # Twitter UserID of the person you're listening to
 wait_time = 3600 # 1 Hour
+failLimit = 10 # How many retries to allow before exitting process
+
+#################
 
 def bearer_oauth(r):
     """
@@ -68,12 +74,31 @@ def set_wallpaper():
 def main():
     url = "https://api.twitter.com/2/users/{}/tweets".format(user_id)
     params = {"tweet.fields": "created_at,attachments", "media.fields": "url", "max_results": 5, "exclude": "retweets,replies", "expansions": "attachments.media_keys"}
+    connected = False
+    failCounter = 0
 
     while True:
+        connected = False
+        
         if testing:
             json_response = get_testing_data("new")
         else:
-            json_response = connect_to_endpoint(url, params)
+            # Helps prevent crash on startup, since it may take a while for the computer to connect to the internet
+            while connected == False:
+                try:
+                    json_response = connect_to_endpoint(url, params)
+                    connected = True
+                except requests.ConnectionError:
+                    failCounter += 1
+
+                    print("Couldn't connect, possibly no internet connection available")
+
+                    if failCounter >= failLimit:
+                        print("Too many retries, exitting process...")
+                        sys.exit()
+                    else:
+                        print("Retrying in 5 seconds...")
+                        time.sleep(5)
 
         with open(os.path.dirname(__file__) + "/" + "current_wallpaper.txt", "r+") as current_wallpaper_file:
             current_wallpaper = current_wallpaper_file.read()
